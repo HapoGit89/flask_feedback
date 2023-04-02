@@ -1,0 +1,11 @@
+.bigpetpic
+{
+    max-height: 300px;
+    max-width: auto;
+    border: solid;
+    border-width: 2px;
+}
+
+body {
+    background-color: blue;
+}

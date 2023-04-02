@@ -22,7 +22,7 @@ class Pet (db.Model):
         species = db.Column(db.String(20),
                           nullable = False)
         image_url = db.Column(db.Text,      
-                          default = "https://as2.ftcdn.net/v2/jpg/00/31/32/99/1000_F_31329924_hGwoiEiGQELkjd0ZShrSOAwi60tZc4S9.jpg")
+                          default = "https://cdn.shopify.com/s/files/1/2994/3128/products/Essex_Paint_Black_Cat_1024x1024@2x.jpeg")
         age = db.Column(db.Integer)
         notes = db.Column(db.Text)
         available = db.Column(db.Boolean,

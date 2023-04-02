@@ -1,15 +1,24 @@
 .petpic{
-    max-height: 100px;
+    max-height: 200px;
     max-width: auto;
     border: solid;
-    border-width: 4px;
+    border-width: 1px;
 }
 
 .petlist {
     display: flex;
     flex-direction: row;
+    flex-wrap: wrap;
 }
 
 .pet{
     margin: 10px;
+}
+
+.bigpetpic
+{
+    max-height: 300px;
+    max-width: auto;
+    border: solid;
+    border-width: 2px;
 }
