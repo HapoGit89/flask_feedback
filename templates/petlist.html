@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="static/style.css">
+    <title>Pets</title>
+</head>
+<body>
+    <h1>These are our Pets</h1>
+    <div class="petlist">
+        {% for pet in pets %}
+        <div class ="pet" id="{{pet.name}}">
+            <img src="{{pet.image_url}}" class ="petpic">
+            <p>{{pet.name}} 
+                {% if pet.available %}
+                <b>is available</b></p>
+                {% endif %}                
+            </div>
+        {% endfor %}
+    </div>
+
+    <button onclick="window.location.href='pets/add'">Add Pet</button>
+
+    
+</body>
+</html>
