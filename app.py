@@ -68,3 +68,8 @@ def show_secret():
         return render_template("secret.html")
     else:
         return redirect ("/login")
+    
+@app.route("/logout")
+def log_user_out():
+    session.pop('user_id')
+    return redirect ("/login")
