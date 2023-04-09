@@ -1,6 +1,6 @@
-from flask import Flask, render_template, request, redirect
+from flask import Flask, session, render_template, request, redirect
 from models import db, connect_db, User
-from forms import UserRegisterForm
+from forms import UserRegisterForm, UserLoginForm
 from flask_bcrypt import Bcrypt
 
 
@@ -36,7 +36,35 @@ def show_register_form():
         user = User.register(password = password, username = username, last_name = last_name, first_name = first_name, email = email)
         db.session. add(user)
         db.session.commit()
-        return redirect("/")
+        registered_user = User.query.filter_by(username = username).first()
+        session['user_id']=registered_user.id
+    
+
+
+        return redirect("/secret")
     
     else:
         return render_template("register.html", form = form)
+    
+@app.route("/login", methods = ["POST", "GET"])
+def login_user():
+    form = UserLoginForm()
+    if form.validate_on_submit():
+        password = form.password.data
+        username = form.username.data
+        user = User.query.filter_by(username = username).first()
+        if User.login(username = username, password = password):
+            session['user_id']=user.id
+            return redirect ("/secret")
+        else: 
+            return redirect ("/login")
+    else:
+        return render_template("login.html", form = form)
+
+
+@app.route("/secret")
+def show_secret():
+    if 'user_id' in session:
+        return render_template("secret.html")
+    else:
+        return redirect ("/login")
