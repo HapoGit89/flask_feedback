@@ -1,4 +1,7 @@
 from flask_sqlalchemy import SQLAlchemy
+from flask_bcrypt import Bcrypt
+
+bcrypt = Bcrypt()
 
 
 db = SQLAlchemy()
@@ -33,3 +36,11 @@ class User (db.Model):
                           nullable = False)
     last_name = db.Column(db.String(20),
                           nullable = False)
+    email = db.Column(db.String(50),
+                      nullable = False)
+    
+    @classmethod
+    def register(cls, username, password, first_name, last_name, email):
+        hashed = bcrypt.generate_password_hash(password)
+        hashed_utf8 = hashed.decode("utf8")
+        return cls(username = username, password = hashed_utf8, first_name = first_name, last_name = last_name, email = email )

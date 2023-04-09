@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, redirect
-from models import db, connect_db
+from models import db, connect_db, User
 from forms import UserRegisterForm
+from flask_bcrypt import Bcrypt
 
 
 
@@ -26,4 +27,16 @@ def redirect_to_register():
 @app.route("/register", methods = ["POST", "GET"])
 def show_register_form():
     form = UserRegisterForm()
-    return render_template("register.html", form = form)
+    if form.validate_on_submit():
+        password = form.password.data
+        username = form.username.data
+        email = form.email.data
+        last_name = form.last_name.data
+        first_name = form.first_name.data
+        user = User.register(password = password, username = username, last_name = last_name, first_name = first_name, email = email)
+        db.session. add(user)
+        db.session.commit()
+        return redirect("/")
+    
+    else:
+        return render_template("register.html", form = form)
