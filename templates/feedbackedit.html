@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit Feedback{% endblock %}
+
+{% block content %}
+<h1>Now you can edit your feedback</h1>
+<form id="feedback-edit" method="POST">
+    {{ form.hidden_tag() }} 
+  
+
+  
+      <p>
+        {{ form.title.label}}
+        {{ form.title }}
+  
+       
+          {{ form.title.error }}
+        
+      </p>
+      <p>
+        {{ form.content.label}}
+        {{ form.content }}
+  
+       
+          {{ form.content.error }}
+        
+      </p>
+  
+    
+  
+    <button type="submit">Submit</button>
+  </form>
+ 
+
+{% endblock %}

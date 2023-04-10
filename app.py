@@ -1,6 +1,6 @@
 from flask import Flask, session, render_template, request, redirect
 from models import db, connect_db, User, Feedback
-from forms import UserRegisterForm, UserLoginForm
+from forms import UserRegisterForm, UserLoginForm, FeedbackForm
 from flask_bcrypt import Bcrypt
 
 
@@ -77,19 +77,62 @@ def log_user_out():
 @app.route("/feedback/<feedbackid>/delete")
 def delete_feedback(feedbackid):
     feedback = Feedback.query.filter_by(id=int(feedbackid)).one()
-    db.session.delete(feedback)
-    db.session.commit()
-    return redirect(f"/user/{feedback.username}")
+    user = User.query.filter_by(username = feedback.username).one()
+    if 'user_id' in session and session['user_id'] == user.id:
+        db.session.delete(feedback)
+        db.session.commit()
+        return redirect(f"/user/{feedback.username}")
+    else:
+        return redirect ("/login")
 
 @app.route("/user/<userid>/delete")
 def delete_user(userid):
     user = User.query.filter_by(id=int(userid)).one()
     feedbacks = Feedback.query.filter_by(username = user.username).all()
-    for feedback in feedbacks:
-        db.session.delete(feedback)
+    if 'user_id' in session and session['user_id'] == user.id:
+        for feedback in feedbacks:
+            db.session.delete(feedback)
+            db.session.commit()
+        db.session.delete(user)
         db.session.commit()
-    db.session.delete(user)
-    db.session.commit()
-    session.pop('user_id')
-    return redirect("/")
+        session.pop('user_id')
+        return redirect("/")
+    else: 
+        return redirect ("/login")
+
+@app.route("/user/<username>/feedback/add", methods = ["GET", "POST"])
+def add_feedback(username):
+     form = FeedbackForm()
+     user = User.query.filter_by(username = username).one()
+     if 'user_id' in session and session['user_id'] == user.id:
+        if form.validate_on_submit():
+            content = form.content.data
+            title = form.title.data
+            feedback = Feedback(title = title, content = content, username = user.username)
+            db.session.add(feedback)
+            db.session.commit()
+            return redirect (f"/user/{user.username}")
+        else:
+            return render_template("newfeedback.html", form = form)
+     else:
+         return redirect("/login")
+         
+
+
+@app.route("/feedback/<feedbackid>/update", methods = ["GET", "POST"])
+def update_feedback(feedbackid):
+    feedback = Feedback.query.filter_by(id = feedbackid).one()
+    user = User.query.filter_by(username = feedback.username).one()   
+    form = FeedbackForm(obj = feedback)
+    if 'user_id' in session and session['user_id'] == user.id:
+        if form.validate_on_submit():
+            feedback.content = form.content.data
+            feedback.title = form.title.data
+            db.session.add(feedback)
+            db.session.commit()
+            return redirect (f"/user/{user.username}")
+        else:
+            return render_template("feedbackedit.html", form = form)
+    else:
+        return redirect ("/login")
 
