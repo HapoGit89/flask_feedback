@@ -38,10 +38,7 @@ def show_register_form():
         db.session.commit()
         registered_user = User.query.filter_by(username = username).first()
         session['user_id']=registered_user.id
-    
-
-
-        return redirect("/secret")
+        return redirect(f"/user/{registered_user.username}")
     
     else:
         return render_template("register.html", form = form)
@@ -55,17 +52,18 @@ def login_user():
         user = User.query.filter_by(username = username).first()
         if User.login(username = username, password = password):
             session['user_id']=user.id
-            return redirect ("/secret")
+            return redirect (f"/user/{user.username}")
         else: 
             return redirect ("/login")
     else:
         return render_template("login.html", form = form)
 
 
-@app.route("/secret")
-def show_secret():
-    if 'user_id' in session:
-        return render_template("secret.html")
+@app.route("/user/<username>")
+def show_user_details(username):
+    user = User.query.filter_by(username = username).first()
+    if 'user_id' in session and session['user_id'] == user.id:
+        return render_template("userdetails.html", user = user)
     else:
         return redirect ("/login")
     
