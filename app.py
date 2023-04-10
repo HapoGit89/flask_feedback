@@ -1,5 +1,5 @@
 from flask import Flask, session, render_template, request, redirect
-from models import db, connect_db, User
+from models import db, connect_db, User, Feedback
 from forms import UserRegisterForm, UserLoginForm
 from flask_bcrypt import Bcrypt
 
@@ -61,9 +61,10 @@ def login_user():
 
 @app.route("/user/<username>")
 def show_user_details(username):
+    feedback = Feedback.query.filter_by(username = username). all()
     user = User.query.filter_by(username = username).first()
     if 'user_id' in session and session['user_id'] == user.id:
-        return render_template("userdetails.html", user = user)
+        return render_template("userdetails.html", user = user, feedback = feedback)
     else:
         return redirect ("/login")
     
@@ -71,3 +72,24 @@ def show_user_details(username):
 def log_user_out():
     session.pop('user_id')
     return redirect ("/login")
+
+
+@app.route("/feedback/<feedbackid>/delete")
+def delete_feedback(feedbackid):
+    feedback = Feedback.query.filter_by(id=int(feedbackid)).one()
+    db.session.delete(feedback)
+    db.session.commit()
+    return redirect(f"/user/{feedback.username}")
+
+@app.route("/user/<userid>/delete")
+def delete_user(userid):
+    user = User.query.filter_by(id=int(userid)).one()
+    feedbacks = Feedback.query.filter_by(username = user.username).all()
+    for feedback in feedbacks:
+        db.session.delete(feedback)
+        db.session.commit()
+    db.session.delete(user)
+    db.session.commit()
+    session.pop('user_id')
+    return redirect("/")
+
