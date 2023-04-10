@@ -27,7 +27,7 @@ class User (db.Model):
     id = db.Column(db.Integer,
                    primary_key = True,
                    autoincrement = True)
-    username = db.Column(db.Text,
+    username = db.Column(db.Text, unique = True,
                          nullable = False)
     password = db.Column (db.Text,
                           nullable = False
@@ -53,3 +53,20 @@ class User (db.Model):
             return user
         else:
             return False
+        
+    class Feedback(db.Model):
+        """User Feedback"""
+
+        __tablename__ = "feedback"
+
+        id = db.Column(db.Integer,
+                   primary_key = True,
+                   autoincrement = True)
+        title = db.Column(db.String(30),
+                         nullable = False)
+        content = db.Column(db.Text,
+                          nullable = False)
+        username = db.Column(db.Text, db.ForeignKey('users.username'))
+        
+        
+
